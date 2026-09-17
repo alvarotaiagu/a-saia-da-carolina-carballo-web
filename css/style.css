@@ -1077,8 +1077,24 @@ button.contacto-pendiente{ text-decoration:underline; text-underline-offset:4px;
 .aviso-cookies:not([hidden]){ display:flex; }
 .aviso-cookies p{ margin:0; font-size:.8rem; line-height:1.5; }
 .aviso-cookies .btn{ flex:none; padding:.6rem 1rem; }
-@media (max-width: 560px){
-  .aviso-cookies{ flex-direction:column; align-items:stretch; text-align:left; }
+/* En el móvil el aviso caía justo encima del maniquí del hero, que es
+   lo primero que hay que ver. En columna todavía ocupaba más. Aquí va
+   como franja fina pegada al borde, en una sola línea: la frase que
+   importa se queda, y la del mapa sobra porque el propio recuadro del
+   mapa ya lo explica ahí mismo. */
+@media (max-width: 620px){
+  .aviso-cookies{
+    left:0; right:0; bottom:0; max-width:none;
+    padding:.55rem .7rem;
+    gap:.6rem;
+    box-shadow:0 -6px 20px rgba(21,21,21,.16);
+  }
+  .aviso-cookies p{ font-size:.7rem; line-height:1.35; }
+  .aviso-extra{ display:none; }
+  .aviso-cookies .btn{
+    padding:.55rem .85rem; min-height:2.5rem;   /* que siga siendo pulsable con el dedo */
+    font-size:.64rem; letter-spacing:.1em;
+  }
 }
 
 /* ---------------------------------------------------------------
