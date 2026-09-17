@@ -486,7 +486,14 @@
   /* ================================================================
      A partir de aquí, sólo movimiento.
      ================================================================ */
-  if (!motion) return;
+  /* Sin GSAP o con movimiento reducido se sale aquí, así que la cortina
+     hay que retirarla ANTES del return o se queda puesta tapando el sitio
+     entero (el módulo de abajo ya no llega a ejecutarse). */
+  if (!motion) {
+    const tapa = document.querySelector("[data-cortina]");
+    if (tapa) tapa.hidden = true;
+    return;
+  }
 
   /* ---------- Lenis ----------
      lerp alto a propósito (0.16): esta página tiene una galería que se
@@ -510,6 +517,101 @@
       });
     });
   }
+
+
+  /* ---------- Cortina de entrada (preloader) ----------
+     Gesto propio de esta plantilla: un probador. El maniquí se descubre
+     de abajo arriba, el rótulo sube desde una máscara, la cinta se abre
+     y luego las DOS hojas se separan hacia los lados.
+
+     Dos momentos, y son distintos a propósito:
+       · alAbrirse(fn) → cuando las hojas EMPIEZAN a separarse, para que
+         el hero ya se esté vistiendo cuando asoma por el hueco.
+       · retirar()     → al terminar: quita el nodo, devuelve el scroll y
+         refresca ScrollTrigger, que midió con overflow:hidden.
+     Se retira SIEMPRE (sin GSAP, con reduced-motion, o por el timeout de
+     seguridad): una cortina atascada tapa el sitio entero. */
+  const cortina = (function initCortina() {
+    const el = $("[data-cortina]");
+    const espera = [];
+    let abierta = false;
+    let fuera = false;
+    let tl = null;
+    const VISTA = "saia-cortina-vista";
+
+    function abrir() {
+      if (abierta) return;
+      abierta = true;
+      espera.splice(0).forEach((fn) => { try { fn(); } catch (e) {} });
+    }
+    function retirar() {
+      abrir();
+      if (fuera) return;
+      fuera = true;
+      quitaEscuchas();
+      if (tl) tl.kill();
+      if (el) el.hidden = true;
+      html.classList.remove("cortina-puesta");
+      if (lenis) lenis.start();
+      if (gsapReady) ScrollTrigger.refresh();
+    }
+
+    /* Mientras la cortina está puesta NO se puede mover la página. Eso es
+       aceptable un instante, pero sólo si a la primera señal de que
+       alguien quiere entrar se quita de en medio: si no, la web parece
+       trabada y rota. Con la CPU al cuarto de velocidad la coreografía se
+       estiraba y el scroll se quedaba muerto casi siete segundos. */
+    const SENALES = ["wheel", "touchstart", "pointerdown", "keydown"];
+    function alIntentar() { retirar(); }
+    function quitaEscuchas() {
+      SENALES.forEach((s) => window.removeEventListener(s, alIntentar));
+    }
+    SENALES.forEach((s) => window.addEventListener(s, alIntentar, { passive: true }));
+
+    const api = { alAbrirse: (fn) => (abierta ? fn() : espera.push(fn)) };
+    if (!el || !motion) { retirar(); return api; }
+
+    /* Una cortina se ve bien la primera vez. A la tercera, volviendo de
+       otra pestaña, es un peaje. */
+    let vista = false;
+    try { vista = sessionStorage.getItem(VISTA) === "1"; } catch (e) {}
+    if (vista) { retirar(); return api; }
+    try { sessionStorage.setItem(VISTA, "1"); } catch (e) {}
+
+    html.classList.add("cortina-puesta");
+    if (lenis) lenis.stop();
+
+    const centro = $(".cortina-centro", el);
+    const maniqui = $(".cortina-maniqui", el);
+    const marca = $(".cortina-marca span", el);
+    const cinta = $(".cortina-cinta", el);
+    const pie = $(".cortina-pie", el);
+    const izq = $(".cortina-hoja--izq", el);
+    const der = $(".cortina-hoja--der", el);
+    const ABRE = 1.35;
+
+    tl = gsap.timeline({ onComplete: retirar });
+    if (maniqui) tl.to(maniqui, { clipPath: "inset(0% 0 0 0)", duration: 0.95, ease: "power2.inOut" }, 0);
+    /* el estado inicial es un translateY(112%) de CSS y GSAP lo lee del
+       matrix como "y: 40px", no como yPercent: hay que poner las dos a
+       cero o el r\u00f3tulo no sale nunca de su m\u00e1scara. */
+    if (marca) tl.to(marca, { y: 0, yPercent: 0, duration: 0.9, ease: "expo.out" }, 0.5);
+    if (cinta) tl.to(cinta, { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, 0.78);
+    if (pie) tl.to(pie, { opacity: 1, letterSpacing: "0.34em", duration: 0.85, ease: "power2.out" }, 0.82);
+
+    tl.add(abrir, ABRE);
+    if (centro) tl.to(centro, { opacity: 0, scale: 0.97, duration: 0.45, ease: "power2.in" }, ABRE);
+    /* las hojas no salen a la vez: 60 ms de diferencia y parece que alguien
+       las aparta, no que se abra una puerta de garaje */
+    if (izq) tl.to(izq, { xPercent: -101, duration: 1.05, ease: "expo.inOut" }, ABRE + 0.06);
+    if (der) tl.to(der, { xPercent: 101, duration: 1.05, ease: "expo.inOut" }, ABRE);
+
+    /* Tope duro. La coreografía dura ~2,4 s a velocidad normal; si la
+       máquina va justa se estira, y lo que no puede pasar es que el tope
+       sea tan generoso que la página se sienta colgada. */
+    setTimeout(retirar, 2600);
+    return api;
+  })();
 
   /* ---------- División en caracteres (accesible) ----------
      El texto se sustituye por spans, así que la frase entera se
@@ -566,7 +668,7 @@
       { clave: "calzado", desde: -520 },
       { clave: "bolso",   desde:  520 }
     ];
-    const tl = gsap.timeline({ delay: 0.45 });
+    const tl = gsap.timeline({ delay: 0.45, paused: true });
     entradas.forEach((e, i) => {
       const g = $(".prenda-" + e.clave, svg);
       if (!g) return;
@@ -578,6 +680,9 @@
     });
     const etiqueta = $(".etiqueta-look");
     if (etiqueta) tl.to(etiqueta, { opacity: 1, duration: 0.5, ease: "power2.out" }, "-=0.15");
+    /* el maniquí no empieza a vestirse hasta que se abren las hojas: lo
+       primero que se ve por el hueco ya está en movimiento */
+    cortina.alAbrirse(() => tl.play());
   })();
 
   /* ---------- El resto del hero ---------- */
@@ -589,10 +694,12 @@
     if (!partes.length) return;
     /* immediateRender false: si no, GSAP pinta el estado "from" al
        crear el tween y el hero se apaga antes de tiempo. */
-    gsap.from(partes, {
+    const tlTexto = gsap.timeline({ delay: 0.25, paused: true });
+    tlTexto.from(partes, {
       y: 18, opacity: 0, duration: 1, ease: "power3.out",
-      stagger: 0.1, delay: 0.55, immediateRender: false
+      stagger: 0.1, immediateRender: false
     });
+    cortina.alAbrirse(() => tlTexto.play());
   })();
 
   /* ---------- Las tarjetas de novedad entran con un giro mínimo ----------
@@ -671,18 +778,23 @@
     const nav = $("#rotulo");
     if (!nav) return;
     let ultimo = 0;
+    let escondida = false;
+    /* Sólo se anima cuando el estado CAMBIA. Antes se creaba un tween
+       nuevo en cada fotograma de scroll (60 por segundo) para dejar la
+       barra donde ya estaba. */
+    const pon = (fuera) => {
+      if (fuera === escondida) return;
+      escondida = fuera;
+      gsap.to(nav, { yPercent: fuera ? -100 : 0, duration: fuera ? 0.4 : 0.35, overwrite: true });
+    };
     ScrollTrigger.create({
       start: 0, end: "max",
       onUpdate: (self) => {
         const y = self.scroll();
         const menu = $("#nav-movil");
-        if (y < 140 || (menu && !menu.hidden)) {
-          gsap.to(nav, { yPercent: 0, duration: 0.35, overwrite: true });
-        } else if (y > ultimo + 6) {
-          gsap.to(nav, { yPercent: -100, duration: 0.4, overwrite: true });
-        } else if (y < ultimo - 6) {
-          gsap.to(nav, { yPercent: 0, duration: 0.35, overwrite: true });
-        }
+        if (y < 140 || (menu && !menu.hidden)) pon(false);
+        else if (y > ultimo + 6) pon(true);
+        else if (y < ultimo - 6) pon(false);
         ultimo = y;
       }
     });

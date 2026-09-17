@@ -139,8 +139,8 @@ em,.cursiva{ font-family:var(--serif); font-style:italic; font-weight:300; }
   text-decoration:none; border:1px solid transparent; border-radius:0;
   cursor:pointer; background:none; color:inherit;
   transition:background-color .3s ease, color .3s ease, border-color .3s ease;
-  will-change:transform;
 }
+.magnetico{ will-change:transform; }
 .btn-acento{ background:var(--acento-texto); color:#fff; }
 .btn-acento:hover{ background:var(--tinta); }
 .btn-linea{ border-color:var(--tinta); color:var(--tinta); }
@@ -183,8 +183,7 @@ em,.cursiva{ font-family:var(--serif); font-style:italic; font-weight:300; }
    --------------------------------------------------------------- */
 .rotulo{
   position:fixed; inset:0 0 auto 0; z-index:50;
-  background:color-mix(in srgb, var(--marfil) 88%, transparent);
-  backdrop-filter:blur(8px);
+  background:var(--marfil);
   border-bottom:1px solid var(--linea-fina);
   will-change:transform;
 }
@@ -301,6 +300,42 @@ em,.cursiva{ font-family:var(--serif); font-style:italic; font-weight:300; }
   color:var(--apagado);
 }
 .probador-pie-linea{ flex:0 0 clamp(2rem,8vw,6rem); height:1px; background:var(--linea); }
+
+/* ---------- Cortina de entrada (preloader) ----------
+   Dos hojas de probador que se abren hacia los lados. El centro va por
+   encima de las dos, así que el maniquí nunca se parte por la mitad.
+   Todo lo que arranca "vacío" vive bajo html.has-motion: sin GSAP la
+   cortina se retira al instante y nadie ve un panel a medias.
+   Ojo: .cortina usa display:grid, así que [hidden] necesita su regla. */
+.cortina{ position:fixed; inset:0; z-index:400; display:grid; place-items:center; }
+.cortina[hidden]{ display:none; }
+html.cortina-puesta{ overflow:hidden; }
+
+.cortina-hoja{
+  position:absolute; top:-1px; bottom:-1px; width:50.6%;
+  background:linear-gradient(180deg,#1C1C1C 0%,var(--tinta) 42%,#0E0E0E 100%);
+}
+.cortina-hoja--izq{ left:0;  box-shadow:inset -18px 0 34px -22px rgba(255,255,255,.22); }
+.cortina-hoja--der{ right:0; box-shadow:inset  18px 0 34px -22px rgba(255,255,255,.22); }
+
+.cortina-centro{ position:relative; display:grid; justify-items:center; gap:.85rem; padding:0 1.5rem; text-align:center; }
+.cortina-maniqui{ height:min(34svh, 15rem); width:auto; }
+.cortina-maniqui use{ fill:var(--marfil); }
+.cortina-marca{ overflow:hidden; padding-bottom:.1em; }
+.cortina-marca span{
+  display:block; font-family:var(--serif); font-weight:300;
+  font-size:clamp(1.6rem,5.2vw,2.9rem); line-height:1.05; color:var(--marfil);
+}
+.cortina-cinta{ display:block; width:min(44vw,240px); height:1px; background:var(--acento); transform-origin:50% 50%; }
+.cortina-pie{ font-family:var(--sans); font-size:.7rem; font-weight:600; letter-spacing:.34em; text-transform:uppercase; color:rgba(244,239,230,.62); }
+
+html.has-motion .cortina-maniqui{ clip-path:inset(100% 0 0 0); }
+html.has-motion .cortina-marca span{ transform:translateY(112%); }
+html.has-motion .cortina-cinta{ transform:scaleX(0); }
+html.has-motion .cortina-pie{ opacity:0; letter-spacing:.62em; }
+
+/* con movimiento reducido no debe verse ni un fotograma */
+@media (prefers-reduced-motion: reduce){ .cortina{ display:none; } }
 
 /* El maniquí y sus prendas */
 .maniqui{ display:block; }
@@ -1038,7 +1073,7 @@ button.contacto-pendiente{ text-decoration:underline; text-underline-offset:4px;
    tarjetas ya colocadas.
    --------------------------------------------------------------- */
 .split-word{ display:inline-block; white-space:nowrap; }
-.split-char{ display:inline-block; will-change:transform; }
+.split-char{ display:inline-block; }
 
 .has-motion .split-char{ opacity:0; }
 .has-motion .maniqui-hero .prenda{ opacity:0; }

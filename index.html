@@ -64,6 +64,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200;0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Manrope:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=1">
+<!-- Sin JavaScript no hay quien abra la cortina: mejor no enseñarla. -->
+<noscript><style>.cortina { display: none !important; }</style></noscript>
 
 <!-- ==================================================================
      RECIÉN LLEGADO · las novedades salen de una hoja de cálculo
@@ -116,6 +118,22 @@
 
 <!-- La cinta métrica de la modista recorre el lateral: marca lo que
      llevas medido de la página. Es la misma cinta que separa secciones. -->
+
+<!-- Cortina de entrada: dos hojas de probador que se abren. Se retira
+     SIEMPRE desde js/main.js; el script de abajo es la red de seguridad
+     por si main.js no llega a cargarse. -->
+<div class="cortina" data-cortina aria-hidden="true">
+  <span class="cortina-hoja cortina-hoja--izq"></span>
+  <span class="cortina-hoja cortina-hoja--der"></span>
+  <div class="cortina-centro">
+    <svg class="cortina-maniqui" viewBox="150 80 460 1150" aria-hidden="true"><use href="#maniqui-trazo"/></svg>
+    <p class="cortina-marca"><span>A Saia da Carolina</span></p>
+    <span class="cortina-cinta" aria-hidden="true"></span>
+    <p class="cortina-pie">Carballo</p>
+  </div>
+</div>
+<script>setTimeout(function(){var c=document.querySelector('[data-cortina]');if(c&&!c.hidden){c.hidden=true;document.documentElement.classList.remove('cortina-puesta');}},6000);</script>
+
 <div class="medida" aria-hidden="true"><i class="medida-recorrido"></i></div>
 
 <header class="rotulo" id="rotulo">
