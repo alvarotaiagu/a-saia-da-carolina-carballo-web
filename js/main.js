@@ -552,7 +552,6 @@
       if (tl) tl.kill();
       if (el) el.hidden = true;
       html.classList.remove("cortina-puesta");
-      if (lenis) lenis.start();
       if (gsapReady) ScrollTrigger.refresh();
     }
 
@@ -579,7 +578,6 @@
     try { sessionStorage.setItem(VISTA, "1"); } catch (e) {}
 
     html.classList.add("cortina-puesta");
-    if (lenis) lenis.stop();
 
     const centro = $(".cortina-centro", el);
     const maniqui = $(".cortina-maniqui", el);

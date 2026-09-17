@@ -45,9 +45,20 @@
 
 html{
   font-size:16px;
-  scroll-behavior:smooth;
   -webkit-text-size-adjust:100%;
 }
+
+/* Lenis. Estas reglas son SUYAS y hay que ponerlas: sin ellas
+   `scroll-behavior:smooth` sigue activo, el navegador anima por su
+   cuenta cada scrollTo que hace Lenis, los dos se pelean por la misma
+   posición y el resultado es un scroll que apenas avanza y va con
+   retraso. El suavizado por CSS solo tiene sentido cuando Lenis NO
+   está gobernando (sin JS, o con movimiento reducido). */
+html:not(.lenis){ scroll-behavior:smooth; }
+html.lenis, html.lenis body{ height:auto; }
+.lenis.lenis-smooth{ scroll-behavior:auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent]{ overscroll-behavior:contain; }
+.lenis.lenis-stopped{ overflow:hidden; }
 @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }
 
 body{
@@ -309,7 +320,12 @@ em,.cursiva{ font-family:var(--serif); font-style:italic; font-weight:300; }
    Ojo: .cortina usa display:grid, así que [hidden] necesita su regla. */
 .cortina{ position:fixed; inset:0; z-index:400; display:grid; place-items:center; }
 .cortina[hidden]{ display:none; }
-html.cortina-puesta{ overflow:hidden; }
+/* La cortina NO le quita el scroll a la página. Si el documento arranca
+   con overflow:hidden, Chromium engancha el gesto de la rueda a un
+   destino que no se mueve y no lo suelta mientras sigas girando sin
+   pausa — que es exactamente lo que hace quien entra y empieza a bajar.
+   Resultado: segundos de rueda muerta aunque la cortina ya se haya ido.
+   La cortina es una capa encima y nada más; al primer gesto se retira. */
 
 .cortina-hoja{
   position:absolute; top:-1px; bottom:-1px; width:50.6%;
