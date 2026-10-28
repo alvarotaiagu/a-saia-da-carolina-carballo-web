@@ -124,24 +124,18 @@ siguen en pantalla, visibles y sin errores en consola.
 ## Los seis huecos de Instagram
 
 El feed de Instagram no se puede leer sin API, así que no hay muro automático: hay **seis
-huecos** que se rellenan a mano. En `index.html`, sección `#instagram`, cada hueco es:
+huecos** que se rellenan a mano. Desde el 2026-10-28 llevan fotos que mandó la tienda
+(`real-insta-*`, a 300 y 600 px). Para cambiar una, se sustituye su `<li>`:
 
 ```html
-<li class="insta-hueco" data-pendiente>
-  <img class="insta-silueta" src="assets/img/brand/maniqui.svg" alt="" aria-hidden="true" …>
-  <span class="insta-etiqueta">[FOTO DEL FEED 1]</span>
-</li>
+<li class="insta-hueco insta-foto"><a href="https://www.instagram.com/asaiadacarolinastore/" target="_blank" rel="noopener"><img
+  src="assets/img/photos/real-insta-manton-300.jpg"
+  srcset="assets/img/photos/real-insta-manton-300.jpg 300w, assets/img/photos/real-insta-manton-600.jpg 600w"
+  sizes="(max-width: 460px) 46vw, (max-width: 860px) 31vw, 15vw"
+  alt="Descripción de la foto" width="600" height="600" loading="lazy" decoding="async"></a></li>
 ```
 
-Para poner una foto de verdad, se sustituye el `<li>` entero por:
-
-```html
-<li>
-  <a href="https://www.instagram.com/p/EL-POST/" target="_blank" rel="noopener">
-    <img src="assets/img/photos/insta-1.jpg" alt="Descripción de la foto" width="600" height="600">
-  </a>
-</li>
-```
+Si se sabe el post, el `href` puede ir a `https://www.instagram.com/p/EL-POST/`.
 
 ---
 
@@ -154,18 +148,17 @@ para que se note que falta.
 |---|---|
 | `[CONFIRMAR NOMBRE DE LA PROPIETARIA]` | El nombre de quien lleva la tienda. «Carolina» sale del rótulo, pero nadie lo ha confirmado. |
 | `[AÑO DE APERTURA PENDIENTE]` | Desde cuándo está abierta. |
-| `[CONFIRMAR CATEGORÍAS Y MARCAS]` | Qué familias vende de verdad y con qué marcas. Sale tres veces en «Qué encontrarás» y una en «Recién llegado». |
-| `[EJEMPLO — SUSTITUIR]` | Las 6 prendas de muestra, con fotos de archivo. Se van solas al conectar la hoja. |
-| `[PRECIO]` / `[TALLAS]` | En las prendas de ejemplo. |
+| `[CONFIRMAR CATEGORÍAS Y MARCAS]` | Qué familias vende de verdad y con qué marcas. Sale tres veces en «Qué encontrarás». |
+| Nombres de «Recién llegado» | Las 6 prendas son reales (fotos de la tienda), pero los nombres los puse yo describiendo la foto. Que los confirme ella. Sin precio ni talla a propósito: cada tarjeta lleva a escribirle por Instagram. |
 | `[TEXTO DE RESEÑA PENDIENTE]` | Tres reseñas reales de Google, copiadas tal cual y con el nombre de quien las escribió. Son 49 y ninguna está copiada aquí. |
 | `[WHATSAPP PENDIENTE]` | Si el 611 88 77 61 tiene WhatsApp. Hasta saberlo, el botón abre un diálogo que lo explica y ofrece el teléfono. |
 | `[EMAIL PENDIENTE]` | Un correo de contacto, si lo hay. |
 | `[CONFIRMAR CAMBIOS Y DEVOLUCIONES]` | Plazos y condiciones. |
-| `[FOTO DEL FEED 1…6]` | Seis fotos del Instagram elegidas por la tienda. |
 | `[PRENDAS DE EJEMPLO]` | La etiqueta del hero: qué prendas reales monta el Look 01. |
 
-**No se ha publicado:** ninguna marca, ningún precio, «envíos a toda España», tienda
-online, biografía de la propietaria ni texto de reseña. La valoración 5,0 ★ y las 49
+**No se ha publicado:** ninguna marca, ningún precio, tienda online, biografía de la
+propietaria ni texto de reseña. **Envíos sí** (confirmado 2026-10-28: manda paquetes a quien
+se los pide por redes), pero sin zonas, plazos ni precios, que no se saben. La valoración 5,0 ★ y las 49
 reseñas sí son reales (ficha de Google).
 
 ---
@@ -177,7 +170,12 @@ reseñas sí son reales (ficha de Google).
   `maniqui.svg` (sólo la silueta, la que se usa a gran tamaño y como icono),
   `saia-script.svg` (sólo el texto manuscrito, el rótulo de la cabecera) y
   `saia-marca.svg` (las dos juntas, como el original).
-- **Las fotos son de archivo**, no de la tienda, y así se dice en la propia web («Foto de
+- **Fotos reales de la tienda** (`real-*.jpg`, 2026-10-28): las mandó la tienda por
+  WhatsApp (HEIC del iPhone, convertidas con `pillow-heif`). Van en «Recién llegado», en los
+  huecos de Instagram y en «A saia» (la tienda por dentro). Recortadas, con un etalonaje muy
+  suave para no falsear el color de la prenda y **sin EXIF** (el del móvil puede llevar GPS).
+  Los originales quedan en `fotos-carolina/`, fuera de git: el repo es público.
+- **El resto de fotos son de archivo**, no de la tienda, y así se dice en la propia web («Foto de
   archivo · ambiente», «Fotografía de archivo, etalonada para esta web»). Están todas
   pasadas por el mismo etalonaje —mismo punto de negro suave y mismo blanco marfil— para
   que fotos de orígenes distintos parezcan una sola sesión. Ninguna tiene caras

@@ -300,7 +300,7 @@
   /* ================================================================
      RECIÉN LLEGADO · novedades desde una hoja de Google
      ----------------------------------------------------------------
-     Las 6 prendas de ejemplo ya están pintadas en el HTML. Aquí sólo
+     Las 6 prendas ya están pintadas en el HTML. Aquí sólo
      se intenta sustituirlas. Si la hoja no está configurada, no
      responde, viene vacía o viene rota, NO se toca nada y NO se enseña
      ningún error: se queda lo pintado. Una tienda no puede tener un
@@ -308,7 +308,8 @@
 
      Cómo se rellena la hoja: ver el comentario grande de index.html.
      ================================================================ */
-  const ENLACE_IG = "https://www.instagram.com/asaiadacarolinastore/";
+  /* sin post propio, la tarjeta abre un mensaje directo a la tienda */
+  const ENLACE_IG = "https://ig.me/m/asaiadacarolinastore";
   let revisaPista = function () {};
   let preparaTarjetas = function () {};
 
@@ -355,7 +356,9 @@
             '<span class="prenda-datos">' +
               '<span class="prenda-cat">' + esc(p.categoria || "") + "</span>" +
               '<span class="prenda-nombre">' + esc(p.nombre || "") + "</span>" +
-              '<span class="prenda-tallas">' + esc(p.tallas || "") + "</span>" +
+              (p.tallas
+                ? '<span class="prenda-tallas">' + esc(p.tallas) + "</span>"
+                : '<span class="prenda-pregunta">Pregúntanos por Instagram →</span>') +
             "</span>" +
             precio +
           "</a>" +
@@ -410,7 +413,7 @@
           if (gsapReady) ScrollTrigger.refresh();
         }
       })
-      .catch(() => { /* silencio: se quedan los ejemplos ya pintados */ });
+      .catch(() => { /* silencio: se quedan las prendas ya pintadas */ });
   })();
 
   /* ================================================================

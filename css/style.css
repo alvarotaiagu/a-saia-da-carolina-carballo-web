@@ -599,6 +599,11 @@ main > section > .cinta{ margin-top:clamp(3rem, 8vw, 6rem); }
 .prenda-tallas{
   font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--apagado);
 }
+/* Sin precio ni talla: la tarjeta lleva a preguntar por mensaje. */
+.prenda-pregunta{
+  margin-top:.3rem;
+  font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--acento-texto);
+}
 
 /* La etiqueta de precio: pequeña y colgada de un alfiler. */
 .precio{
@@ -946,6 +951,14 @@ main > section > .cinta{ margin-top:clamp(3rem, 8vw, 6rem); }
   position:relative; z-index:1; text-align:center; padding:.4rem;
   font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; color:var(--apagado);
 }
+/* Hueco ya relleno con una foto del feed. */
+.insta-foto{ border-style:solid; }
+.insta-foto a{ display:block; width:100%; height:100%; }
+.insta-foto img{
+  display:block; width:100%; height:100%; object-fit:cover;
+  transition:transform .8s cubic-bezier(.22,1,.36,1);
+}
+.insta-foto a:hover img{ transform:scale(1.04); }
 .insta-nota{
   margin:1.4rem auto 0; max-width:40rem; text-align:center;
   font-size:.86rem; color:var(--apagado);
