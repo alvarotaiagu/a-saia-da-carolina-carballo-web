@@ -154,7 +154,6 @@ para que se note que falta.
 | `[WHATSAPP PENDIENTE]` | Si el 611 88 77 61 tiene WhatsApp. Hasta saberlo, el botón abre un diálogo que lo explica y ofrece el teléfono. |
 | `[EMAIL PENDIENTE]` | Un correo de contacto, si lo hay. |
 | `[CONFIRMAR CAMBIOS Y DEVOLUCIONES]` | Plazos y condiciones. |
-| `[PRENDAS DE EJEMPLO]` | La etiqueta del hero: qué prendas reales monta el Look 01. |
 
 **No se ha publicado:** ninguna marca, ningún precio, tienda online, biografía de la
 propietaria ni texto de reseña. **Envíos sí** (confirmado 2026-10-28: manda paquetes a quien
